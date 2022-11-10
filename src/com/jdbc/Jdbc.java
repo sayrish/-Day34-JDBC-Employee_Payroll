@@ -4,6 +4,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Scanner;
 
@@ -17,6 +18,7 @@ public class Jdbc {
 		retrieveData(con);
 		updateData(con);
 		System.out.println(reteriveDataByName(con));
+		particularDateRange(con);
 	}
 
 	public static Connection connected() {
@@ -72,6 +74,22 @@ public class Jdbc {
 	            salary = (resultSet.getDouble("salary"));
 	        }
 	        return salary;
+	    }
+	 
+	 public static String particularDateRange(Connection connection) throws SQLException {
+	        String name = null;
+	        String query = "select * from employee_payroll where startDate between ? and ? ";
+	        PreparedStatement preparedStatement = connection.prepareStatement(query);
+	        preparedStatement.setString(1, "2019-01-03");
+	        preparedStatement.setString(2, "2019-11-13");
+	        ResultSet resultSet = preparedStatement.executeQuery();
+	        while (resultSet.next()) {
+	            System.out.println(" ");
+	            System.out.println(resultSet.getInt(1));
+	            System.out.println(resultSet.getString(2));
+	            name = (resultSet.getString("name"));
+	        }
+	        return name;
 	    }
 
 	public static void listDrivers() {

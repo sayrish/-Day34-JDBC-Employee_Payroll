@@ -2,44 +2,60 @@ package com.jdbc;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Enumeration;
 
 import com.mysql.cj.jdbc.Driver;
 
 public class Jdbc {
-	public static void main(String[] args) {
+	static Connection con = null;
+
+	public static void main(String[] args) throws SQLException {
+		con = connected();
+		retrieveData(con);
+	}
+
+	public static Connection connected() {
 		String url = "jdbc:mysql://localhost:3306/payroll_service?useSSL=false";
 		String username = "root";
 		String password = "root";
-		Connection connection;
+		Connection connection = null;
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
-			System.out.println("Driver Loaded!!");
-		}
-		catch (ClassNotFoundException e) 
-		{
-			throw new IllegalStateException("cannot find Driver in classpath... " + e);
+			System.out.println("Driver loaded");
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
 		}
 		listDrivers();
 		try {
-			System.out.println("Connection url: "+url);
-			connection = DriverManager.getConnection(url,username,password);
-			System.out.println("Connection Successfull!!");
-		}
-		catch(Exception e){
+			System.out.println("Connecting to database: " + url);
+			connection = DriverManager.getConnection(url, username, password);
+			System.out.println("Connection is Successful - " + connection);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return connection;
 	}
 
-	private static void listDrivers() {
-		Enumeration<java.sql.Driver> driverList = DriverManager.getDrivers();
-		while(driverList.hasMoreElements())
-		{
-			Driver driverClass = (Driver)driverList.nextElement();
-			System.out.println(" "+driverClass.getClass().getName());
+	public static void retrieveData(Connection connection) throws SQLException {
+
+		//String query = "";
+		PreparedStatement preparedStatement = connection.prepareStatement("select * from employee_payroll where id=?");
+		preparedStatement.setInt(1, 1);
+		ResultSet resultSet = preparedStatement.executeQuery();
+		while (resultSet.next()) {
+			System.out.println(resultSet.getInt("id"));
+			System.out.println(resultSet.getString("name"));
 		}
 	}
 
-
-
+	public static void listDrivers() {
+		Enumeration<java.sql.Driver> driverList = DriverManager.getDrivers();
+		while (driverList.hasMoreElements()) {
+			Driver driverClass = (Driver) driverList.nextElement();
+			System.out.println(" " + driverClass.getClass().getName());
+		}
+	}
 }

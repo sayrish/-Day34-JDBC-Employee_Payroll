@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Enumeration;
+import java.util.Scanner;
 
 import com.mysql.cj.jdbc.Driver;
 
@@ -15,6 +16,7 @@ public class Jdbc {
 	public static void main(String[] args) throws SQLException {
 		con = connected();
 		retrieveData(con);
+		updateData(con);
 	}
 
 	public static Connection connected() {
@@ -40,8 +42,6 @@ public class Jdbc {
 	}
 
 	public static void retrieveData(Connection connection) throws SQLException {
-
-		//String query = "";
 		PreparedStatement preparedStatement = connection.prepareStatement("select * from employee_payroll where id=?");
 		preparedStatement.setInt(1, 1);
 		ResultSet resultSet = preparedStatement.executeQuery();
@@ -49,6 +49,18 @@ public class Jdbc {
 			System.out.println(resultSet.getInt("id"));
 			System.out.println(resultSet.getString("name"));
 		}
+	}
+	public static void updateData(Connection connection) throws SQLException {
+		Scanner sc = new Scanner(System.in);
+		PreparedStatement preparedStatement = connection.prepareStatement("update employee_payroll set salary = ? where id =?;");
+		System.out.println("Enter salary to be updated: ");
+		double salary = sc.nextDouble();
+		System.out.println("Enter at which id you want to update salary: ");
+		int id = sc.nextInt();
+		preparedStatement.setDouble(1, salary);
+		preparedStatement.setInt(2, id);
+		preparedStatement.executeUpdate();
+		System.out.println("Updated Successfully.....!!!");
 	}
 
 	public static void listDrivers() {
